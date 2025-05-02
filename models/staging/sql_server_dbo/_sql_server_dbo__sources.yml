@@ -85,6 +85,8 @@ sources:
         columns:
           - name: promo_id
           - name: discount
+            tests:
+              - positive_values
           - name: status
           - name: _fivetran_deleted
           - name: _fivetran_synced
