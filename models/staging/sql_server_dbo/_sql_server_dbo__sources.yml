@@ -2,7 +2,7 @@ version: 2
 
 sources:
 
-  - name: _sql_server_dbo__sources # name of the source 
+  - name: sql_server_dbo # name of the source 
     description: ""
     schema: sql_server_dbo # this is the schema our raw data lives in
     database: ALUMNO28_DEV_BRONZE_DB # this is the name of our database
@@ -69,7 +69,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','users')
-                  field: product_id
+                  field: user_id
           - name: product_id
             data_type: varchar
             description: ""
@@ -89,7 +89,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','orders')
-                  field: product_id
+                  field: order_id
           - name: _fivetran_deleted
             data_type: boolean
             description: ""
@@ -148,7 +148,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','addresses')
-                  field: product_id
+                  field: address_id
           - name: created_at
             data_type: timestamp_tz
             description: "Fecha de creación del pedido"
@@ -158,7 +158,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','promos')
-                  field: product_id
+                  field: promo_id
           - name: estimated_delivery_at
             data_type: timestamp_tz
             description: "Fecha de estimación de entrega del pedido"
@@ -173,7 +173,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','users')
-                  field: product_id
+                  field: user_id
           - name: order_total
             data_type: float
             description: "Coste total del pedido"
@@ -264,7 +264,7 @@ sources:
             tests:
               - relationships:
                   to: source('sql_server_dbo','addresses')
-                  field: product_id
+                  field: address_id
           - name: last_name
             data_type: varchar
             description: "Apellido del usuario"
