@@ -3,6 +3,7 @@ version: 2
 sources:
 
   - name: _sql_server_dbo__sources # name of the source 
+    description: ""
     schema: sql_server_dbo # this is the schema our raw data lives in
     database: ALUMNO28_DEV_BRONZE_DB # this is the name of our database
 
@@ -18,90 +19,275 @@ sources:
     tables:
 
       - name: addresses
-        loaded_at_field: _fivetran_synced
+        description: "Tabla de la dirección de cada usuario"
         columns:
           - name: address_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
           - name: zipcode
+            data_type: number
+            description: "Código postal de cada dirección"
+            tests:
+              - positive_values
           - name: country
+            data_type: varchar
+            description: "País de cada dirección"
           - name: address
+            data_type: varchar
+            description: "Dirección"
           - name: state
+            data_type: varchar
+            description: "Estado de cada dirección"
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
 
       - name: events
-        loaded_at_field: _fivetran_synced
+        description: ""
         columns:
           - name: event_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
           - name: page_url
+            data_type: varchar
+            description: ""
           - name: event_type
+            data_type: varchar
+            description: ""
           - name: user_id
-          - name: prduct_id
+            data_type: varchar
+            description: ""
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','users')
+                  field: product_id
+          - name: product_id
+            data_type: varchar
+            description: ""
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','products')
+                  field: product_id
           - name: session_id
+            data_type: varchar
+            description: ""
           - name: created_at
+            data_type: timestamp_ntz
+            description: ""
           - name: order_id
+            data_type: varchar
+            description: ""
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','orders')
+                  field: product_id
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
-
-      - name: orders
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: order_id
-          - name: shipping_service
-          - name: shipping_cost
-          - name: address_id
-          - name: created_at
-          - name: promo_id
-          - name: estimated_delivery_at
-          - name: order_cost
-          - name: user_id
-          - name: order_total
-          - name: delivered_at
-          - name: tracking_id
-          - name: status
-          - name: _fivetran_deleted
-          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
 
       - name: order_items
-        loaded_at_field: _fivetran_synced
+        description: "Tabla de los detalles del pedido"
         columns:
           - name: order_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
           - name: product_id
+            data_type: varchar
+            description: "Id del producto que se ha pedido"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','products')
+                  field: product_id
           - name: quantity
+            data_type: number
+            description: "Cantidad que se ha pedido de ese producto"
+            tests:
+              - positive_values
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
+
+      - name: orders
+        description: "Tabla de los pedidos realizados"
+        columns:
+          - name: order_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
+          - name: shipping_service
+            data_type: varchar
+            description: "Servicios de envío"
+          - name: shipping_cost
+            data_type: float
+            description: "Coste del envío"
+            tests:
+              - positive_values
+          - name: address_id
+            data_type: varchar
+            description: "Id de la dirección del usuario"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','addresses')
+                  field: product_id
+          - name: created_at
+            data_type: timestamp_tz
+            description: "Fecha de creación del pedido"
+          - name: promo_id
+            data_type: varchar
+            description: "Id de la promo a realizar"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','promos')
+                  field: product_id
+          - name: estimated_delivery_at
+            data_type: timestamp_tz
+            description: "Fecha de estimación de entrega del pedido"
+          - name: order_cost
+            data_type: float
+            description: "Coste del pedido"
+            tests:
+              - positive_values
+          - name: user_id
+            data_type: varchar
+            description: "Id del usuario que ha realizado el pedido"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','users')
+                  field: product_id
+          - name: order_total
+            data_type: float
+            description: "Coste total del pedido"
+            tests:
+              - positive_values
+          - name: delivered_at
+            data_type: timestamp_tz
+            description: "Fecha de entrega del pedido"
+          - name: tracking_id
+            data_type: varchar
+            description: "Id del seguimiento del pedido"
+          - name: status
+            data_type: varchar
+            description: "Estado del pedido (realizado, enviado, completado o devuelto)"
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
 
       - name: products
-        loaded_at_field: _fivetran_synced
+        description: "Tabla de los productos que se pueden comprar"
         columns:
           - name: product_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
           - name: price
+            data_type: float
+            description: "Precio de cada producto"
+            tests:
+              - positive_values
           - name: name
+            data_type: varchar
+            description: "Nombre del producto"
           - name: inventory
+            data_type: number
+            description: ""
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
 
       - name: promos
-        loaded_at_field: _fivetran_synced
+        description: "Tabla de las promociones disponibles"
         columns:
           - name: promo_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
           - name: discount
+            data_type: number
+            description: "Descuenta a aplicar al pedido"
             tests:
               - positive_values
           - name: status
+            data_type: varchar
+            description: "Estado de la promoción (si está activa o no)"
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
 
       - name: users
-        loaded_at_field: _fivetran_synced
+        description: "Tabla de los usuarios registrados"
         columns:
           - name: user_id
-          - name: udpate_at
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
+          - name: updated_at
+            data_type: timestamp_tz
+            description: "Última actualización del perfil"
           - name: address_id
+            data_type: varchar
+            description: "Id de la dirección del usuario"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','addresses')
+                  field: product_id
           - name: last_name
+            data_type: varchar
+            description: "Apellido del usuario"
           - name: created_at
+            data_type: timestamp_tz
+            description: "Fecha de creación del usuario"
           - name: phone_number
+            data_type: varchar
+            description: "Número de teléfono del usuario"
           - name: total_orders
+            data_type: number
+            description: "Número total de pedidos que ha realizado"
+            tests:
+              - positive_values
           - name: first_name
+            data_type: varchar
+            description: "Nombre del usuario"
           - name: email
+            data_type: varchar
+            description: "Email del usuario"
           - name: _fivetran_deleted
+            data_type: boolean
+            description: ""
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
