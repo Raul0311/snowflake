@@ -18,10 +18,29 @@ sources:
     tables:
 
       - name: budget
-        loaded_at_field: _fivetran_synced
+        description: ""
         columns:
           - name: _row
-          - name: product_id
+            data_type: number
+            description: ""
+            tests:
+              - unique
+              - not_null
           - name: quantity
+            data_type: number
+            description: ""
+            tests:
+              - positive_values
           - name: month
+            data_type: date
+            description: ""
+          - name: product_id
+            data_type: varchar
+            description: ""
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','products')
+                  field: product_id
           - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""
