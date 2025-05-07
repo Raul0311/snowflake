@@ -5,7 +5,8 @@ WITH src_promos AS (
 
 new_row AS (
     SELECT 
-          'No promo' AS promo_id
+          {{ dbt_utils.generate_surrogate_key(["'Not promo'"]) }} AS promo_id
+          'Not promo' AS name
         , 0 AS discount
         , 'active' AS status
         , NULL AS date_deleted
@@ -15,6 +16,7 @@ new_row AS (
 renamed_casted AS (
     SELECT
           {{ dbt_utils.generate_surrogate_key('promo_id') }} AS promo_id
+        , promo_id AS name
         , CAST(discount AS FLOAT) AS discount
         , status
         , _fivetran_deleted AS date_deleted
