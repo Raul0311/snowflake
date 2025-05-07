@@ -16,7 +16,7 @@ renamed_casted AS (
         , email
         , _fivetran_deleted AS date_deleted
         , CONVERT_TIMEZONE('UTC', _fivetran_synced) AS date_load
-    FROM src_promos
+    FROM src_users
     )
 
 SELECT * FROM renamed_casted;

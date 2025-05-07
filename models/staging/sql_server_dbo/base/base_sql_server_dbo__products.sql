@@ -5,9 +5,9 @@ WITH src_products AS (
 
 new_row AS (
     SELECT 
-          'No producto' AS product_id
+          'No product' AS product_id
         , 0 AS price
-        , 'No aplica' AS name
+        , 'Not applicable' AS name
         , 0 AS inventory
         , NULL AS date_deleted
         , '2025-05-06T17:02:24.597+02:00' AS date_load
