@@ -5,7 +5,7 @@ WITH src_events AS (
 
 renamed_casted AS (
     SELECT
-          event_id
+          {{ dbt_utils.generate_surrogate_key('event_id') }} AS event_id
         , page_url
         , event_type
         , user_id

@@ -5,8 +5,9 @@ WITH src_budget AS (
 
 renamed_casted AS (
     SELECT
-          {{ dbt_utils.generate_surrogate_key('_row') }} AS _row
-        , product_id
+          {{ dbt_utils.generate_surrogate_key('_row') }} AS budget_id
+        , CAST(_row AS FLOAT) AS _row
+        , {{ dbt_utils.generate_surrogate_key('product_id') }} AS product_id
         , CAST(quantity AS FLOAT) AS quantity
         , CAST(month AS DATE) AS month
         , CONVERT_TIMEZONE('UTC', _fivetran_synced) AS date_load
