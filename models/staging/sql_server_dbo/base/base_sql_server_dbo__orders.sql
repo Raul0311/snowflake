@@ -15,7 +15,7 @@ renamed_casted AS (
         , CONVERT_TIMEZONE('UTC', created_at) AS created_at
         , CASE 
               WHEN promo_id = '' THEN {{ dbt_utils.generate_surrogate_key(["'Not promo'"]) }}
-              ELSE promo_id
+              ELSE {{ dbt_utils.generate_surrogate_key('promo_id') }}
           END AS promo_id
         , CONVERT_TIMEZONE('UTC', estimated_delivery_at) AS estimated_delivery_at
         , CAST(order_cost AS FLOAT) AS order_cost

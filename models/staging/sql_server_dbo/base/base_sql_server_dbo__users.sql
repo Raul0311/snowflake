@@ -11,7 +11,7 @@ renamed_casted AS (
         , CAST(last_name AS VARCAHR(50)) AS last_name
         , CONVERT_TIMEZONE('UTC', CAST(created_at AS TIMESTAMP)) AS created_at
         , CAST(phone_number AS INT) AS phone_number
-        , CAST(first_name AS VARCHAR(50))
+        , CAST(first_name AS VARCHAR(50)) AS first_name
         , CAST(email AS VARCHAR(50)) AS email
         , _fivetran_deleted AS date_deleted
         , CONVERT_TIMEZONE('UTC', _fivetran_synced) AS date_load
