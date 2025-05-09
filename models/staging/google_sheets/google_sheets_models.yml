@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+
+  - name: google_sheets_models # name of the source 
+    schema: google_sheets # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 1000, period: day}
+
+    tables:
+
+      - name: budget
+        description: ""
+        columns:
+          - name: _row
+            data_type: number
+            description: ""
+            tests:
+              - unique
+              - not_null
+          - name: quantity
+            data_type: number
+            description: ""
+            tests:
+              - positive_values
+          - name: month
+            data_type: date
+            description: ""
+          - name: product_id
+            data_type: varchar
+            description: ""
+            tests:
+              - relationships:
+                  to: ref('sql_server_dbo','products')
+                  field: product_id
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: ""

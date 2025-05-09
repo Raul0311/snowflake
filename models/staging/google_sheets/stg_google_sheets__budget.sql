@@ -1,16 +1,15 @@
 WITH src_budget AS (
-    SELECT * 
+    SELECT _row, product_id, quantity, month
     FROM {{ source('google_sheets', 'budget') }}
     ),
 
 renamed_casted AS (
     SELECT
-          {{ dbt_utils.generate_surrogate_key('_row') }} AS budget_id
+          dm5('_row') AS budget_id
         , CAST(_row AS FLOAT) AS _row
-        , {{ dbt_utils.generate_surrogate_key('product_id') }} AS product_id
+        , dm5('product_id') AS product_id
         , CAST(quantity AS FLOAT) AS quantity
         , CAST(month AS DATE) AS month
-        , CONVERT_TIMEZONE('UTC', _fivetran_synced) AS date_load
     FROM src_budget
     )
 

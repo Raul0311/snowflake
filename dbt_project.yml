@@ -37,6 +37,11 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   staging:
-    +materialized: view
+      google_sheets:
+        +materialized: table
+      sql_server_dbo:
+        +materialized: table
+        base:
+          +materialized: view
   marts:
     +materialized: table
