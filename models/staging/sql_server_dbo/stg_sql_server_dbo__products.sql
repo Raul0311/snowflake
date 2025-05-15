@@ -5,7 +5,7 @@ WITH src_products AS (
 
 new_row AS (
     SELECT 
-          md5("Not product") AS product_id
+          md5('Not product') AS product_id
         , 0 AS price
         , 'Not product' AS name
         , 0 AS inventory
@@ -14,7 +14,7 @@ new_row AS (
 
 renamed_casted AS (
     SELECT
-          md5('product_id') AS product_id
+          md5(product_id) AS product_id
         , CAST(price AS FLOAT) AS price
         , CAST(name AS VARCHAR(50)) AS name
         , CAST(inventory AS INT) AS inventory

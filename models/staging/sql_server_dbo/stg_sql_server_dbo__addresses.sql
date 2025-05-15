@@ -5,13 +5,13 @@ WITH src_addresses AS (
 
 renamed_casted AS (
     SELECT
-          md5('address_id') AS address_id
+          md5(address_id) AS address_id
         , CAST(zipcode AS INT) AS zipcode
         , CAST(country AS VARCHAR(50)) AS country
         , CAST(address AS VARCHAR(50)) AS address
-        , CAST(state AS VARCAHR(50)) AS state
+        , CAST(state AS VARCHAR(50)) AS state
         , _fivetran_deleted AS date_deleted
     FROM src_addresses
     )
 
-SELECT * FROM renamed_casted;
+SELECT * FROM renamed_casted

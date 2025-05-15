@@ -3,7 +3,7 @@ version: 2
 sources:
 
   - name: google_sheets_models # name of the source 
-    schema: google_sheets # this is the schema our raw data lives in
+    schema: dbt_rrodriguez # this is the schema our raw data lives in
     database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB" # this is the name of our database
 
     quoting:

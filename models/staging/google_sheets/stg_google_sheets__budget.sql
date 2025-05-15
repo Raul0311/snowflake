@@ -5,9 +5,9 @@ WITH src_budget AS (
 
 renamed_casted AS (
     SELECT
-          dm5('_row') AS budget_id
+          md5(_row) AS budget_id
         , CAST(_row AS FLOAT) AS _row
-        , dm5('product_id') AS product_id
+        , md5(product_id) AS product_id
         , CAST(quantity AS FLOAT) AS quantity
         , CAST(month AS DATE) AS month
     FROM src_budget
