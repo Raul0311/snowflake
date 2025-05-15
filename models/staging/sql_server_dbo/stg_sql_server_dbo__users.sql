@@ -5,9 +5,9 @@ WITH src_users AS (
 
 renamed_casted AS (
     SELECT
-          dm5('user_id') AS user_id
-        , dm5('address_id') AS address_id
-        , CAST(last_name AS VARCAHR(50)) AS last_name
+          md5(user_id) AS user_id
+        , md5(address_id) AS address_id
+        , CAST(last_name AS VARCHAR(50)) AS last_name
         , CAST(phone_number AS INT) AS phone_number
         , CAST(first_name AS VARCHAR(50)) AS first_name
         , CAST(email AS VARCHAR(50)) AS email
@@ -15,4 +15,4 @@ renamed_casted AS (
     FROM src_users
     )
 
-SELECT * FROM renamed_casted;
+SELECT * FROM renamed_casted

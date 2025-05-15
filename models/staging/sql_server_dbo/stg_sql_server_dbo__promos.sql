@@ -5,8 +5,8 @@ WITH src_promos AS (
 
 new_row AS (
     SELECT 
-          dm5("Not promo") AS promo_id
-          'Not promo' AS name
+          md5('Not promo') AS promo_id
+        , 'Not promo' AS name
         , 0 AS discount
         , 'active' AS status
         , NULL AS date_deleted
@@ -14,7 +14,7 @@ new_row AS (
 
 renamed_casted AS (
     SELECT
-          dm5('promo_id') AS promo_id
+          md5(promo_id) AS promo_id
         , promo_id AS name
         , CAST(discount AS FLOAT) AS discount
         , status
