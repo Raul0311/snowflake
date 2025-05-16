@@ -5,7 +5,7 @@ WITH src_order_status AS (
 
 renamed_casted AS (
     SELECT
-          md5(status) AS status_id
+          DISTINCT md5(status) AS status_id
         , status
     FROM src_order_status
     )

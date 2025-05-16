@@ -1,6 +1,6 @@
 WITH src_events AS (
     SELECT event_id, page_url, event_type, user_id, product_id, session_id, created_at, order_id, 
-            _fivetran_deleted
+            _fivetran_deleted, _fivetran_synced
     FROM {{ source('sql_server_dbo', 'events') }}
     ),
 
@@ -21,6 +21,7 @@ renamed_casted AS (
               ELSE md5(order_id)
           END AS order_id
         , _fivetran_deleted AS date_deleted
+        , CONVERT_TIMEZONE('UTC', CAST(_fivetran_synced AS TIMESTAMP)) AS _fivetran_synced
     FROM src_events
     )
 

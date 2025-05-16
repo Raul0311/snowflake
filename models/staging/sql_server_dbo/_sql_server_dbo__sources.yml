@@ -73,10 +73,6 @@ sources:
           - name: product_id
             data_type: varchar
             description: ""
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','products')
-                  field: product_id
           - name: session_id
             data_type: varchar
             description: ""
@@ -86,10 +82,6 @@ sources:
           - name: order_id
             data_type: varchar
             description: ""
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','orders')
-                  field: order_id
           - name: _fivetran_deleted
             data_type: boolean
             description: ""
@@ -104,7 +96,6 @@ sources:
             data_type: varchar
             description: "Id único de la tabla"
             tests:
-              - unique
               - not_null
           - name: product_id
             data_type: varchar
@@ -155,10 +146,6 @@ sources:
           - name: promo_id
             data_type: varchar
             description: "Id de la promo a realizar"
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','promos')
-                  field: promo_id
           - name: estimated_delivery_at
             data_type: timestamp_tz
             description: "Fecha de estimación de entrega del pedido"

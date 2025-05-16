@@ -17,15 +17,18 @@ sources:
 
     tables:
 
-      - name: budget
+      - name: stg_google_sheets__budget
         description: ""
         columns:
-          - name: _row
+          - name: budget_id
             data_type: number
             description: ""
             tests:
               - unique
               - not_null
+          - name: _row
+            data_type: number
+            description: ""
           - name: quantity
             data_type: number
             description: ""
