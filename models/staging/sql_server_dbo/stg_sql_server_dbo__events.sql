@@ -8,7 +8,7 @@ renamed_casted AS (
     SELECT
           event_id
         , page_url
-        , event_type
+        , md5(event_type) AS event_type_id
         , user_id
         , product_id
         , session_id

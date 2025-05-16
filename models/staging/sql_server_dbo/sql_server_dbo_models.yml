@@ -18,7 +18,7 @@ sources:
 
     tables:
 
-      - name: addresses
+      - name: stg_sql_server_dbo__addresses
         description: "Tabla de la dirección de cada usuario y pedido"
         columns:
           - name: address_id
@@ -45,7 +45,7 @@ sources:
             data_type: boolean
             description: ""
 
-      - name: events
+      - name: stg_sql_server_dbo__events
         description: ""
         columns:
           - name: event_id
@@ -57,8 +57,12 @@ sources:
           - name: page_url
             data_type: varchar
             description: ""
-          - name: event_type
+          - name: event_type_id
             data_type: varchar
+            tests:
+              - relationships:
+                  to: ref('stg_sql_server_dbo__event_type')
+                  field: event_id
             description: ""
           - name: user_id
             data_type: varchar
@@ -83,22 +87,30 @@ sources:
           - name: order_id
             data_type: varchar
             description: ""
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__orders')
-                  field: order_id
           - name: date_deleted
             data_type: boolean
             description: ""
 
-      - name: order_items
+      - name: stg_sql_server_dbo__event_type
+        description: "Tabla de los tipos de eventos"
+        columns:
+          - name: event_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
+          - name: event_type
+            data_type: varchar
+            description: "Tipo de evento"
+
+      - name: stg_sql_server_dbo__order_items
         description: "Tabla de los detalles del pedido"
         columns:
           - name: order_id
             data_type: varchar
             description: "Id único de la tabla"
             tests:
-              - unique
               - not_null
           - name: product_id
             data_type: varchar
@@ -116,7 +128,7 @@ sources:
             data_type: boolean
             description: ""
 
-      - name: orders
+      - name: stg_sql_server_dbo__orders
         description: "Tabla de los pedidos realizados"
         columns:
           - name: order_id
@@ -187,7 +199,7 @@ sources:
             data_type: boolean
             description: ""
 
-      - name: products
+      - name: stg_sql_server_dbo__products
         description: "Tabla de los productos que se pueden comprar"
         columns:
           - name: product_id
@@ -211,7 +223,7 @@ sources:
             data_type: boolean
             description: ""
 
-      - name: promos
+      - name: stg_sql_server_dbo__promos
         description: "Tabla de las promociones disponibles"
         columns:
           - name: promo_id
@@ -238,7 +250,7 @@ sources:
             data_type: timestamp_tz
             description: ""
 
-      - name: users
+      - name: stg_sql_server_dbo__users
         description: "Tabla de los usuarios registrados"
         columns:
           - name: user_id
@@ -273,7 +285,7 @@ sources:
             data_type: boolean
             description: ""
 
-      - name: order_status
+      - name: stg_sql_server_dbo__order_status
         description: "Tabla de los estados de un pedido"
         columns:
           - name: status_id

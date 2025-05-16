@@ -8,7 +8,7 @@ renamed_casted AS (
           md5(user_id) AS user_id
         , md5(address_id) AS address_id
         , CAST(last_name AS VARCHAR(50)) AS last_name
-        , CAST(phone_number AS INT) AS phone_number
+        , CAST(REPLACE(phone_number, '-', '') AS INT) AS phone_number
         , CAST(first_name AS VARCHAR(50)) AS first_name
         , CAST(email AS VARCHAR(50)) AS email
         , _fivetran_deleted AS date_deleted
