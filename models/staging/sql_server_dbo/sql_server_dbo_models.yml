@@ -19,6 +19,9 @@ sources:
     tables:
 
       - name: stg_sql_server_dbo__addresses
+        config:
+          contract:
+            enforced: true
         description: "Tabla de la dirección de cada usuario y pedido"
         columns:
           - name: address_id
@@ -27,6 +30,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: zipcode
             data_type: number
             description: "Código postal de cada dirección"
@@ -46,6 +53,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__events
+        config:
+          contract:
+            enforced: true
         description: ""
         columns:
           - name: event_id
@@ -54,6 +64,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: page_url
             data_type: varchar
             description: ""
@@ -63,6 +77,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__event_type')
                   field: event_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
             description: ""
           - name: user_id
             data_type: varchar
@@ -71,6 +88,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__users')
                   field: user_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: product_id
             data_type: varchar
             description: ""
@@ -78,6 +98,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__products')
                   field: product_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: session_id
             data_type: varchar
             description: ""
@@ -92,6 +115,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__event_type
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los tipos de eventos"
         columns:
           - name: event_id
@@ -100,11 +126,18 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: event_type
             data_type: varchar
             description: "Tipo de evento"
 
       - name: stg_sql_server_dbo__order_items
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los detalles del pedido"
         columns:
           - name: order_id
@@ -119,6 +152,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__products')
                   field: product_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: quantity
             data_type: number
             description: "Cantidad que se ha pedido de ese producto"
@@ -129,6 +165,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__orders
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los pedidos realizados"
         columns:
           - name: order_id
@@ -137,6 +176,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: shipping_service
             data_type: varchar
             description: "Servicios de envío"
@@ -152,6 +195,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__addresses')
                   field: address_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: created_at
             data_type: timestamp_tz
             description: "Fecha de creación del pedido"
@@ -162,6 +208,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__promos')
                   field: promo_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: estimated_delivery_at
             data_type: timestamp_tz
             description: "Fecha de estimación de entrega del pedido"
@@ -177,6 +226,9 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__users')
                   field: user_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: order_total
             data_type: float
             description: "Coste total del pedido"
@@ -195,11 +247,17 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__order_status')
                   field: status_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: date_deleted
             data_type: boolean
             description: ""
 
       - name: stg_sql_server_dbo__products
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los productos que se pueden comprar"
         columns:
           - name: product_id
@@ -208,6 +266,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: price
             data_type: float
             description: "Precio de cada producto"
@@ -223,11 +285,17 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__product_stock')
                   field: inventory_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
           - name: date_deleted
             data_type: boolean
             description: ""
 
       - name: stg_sql_server_dbo__product_stock
+        config:
+          contract:
+            enforced: true
         description: "Tabla del stock disponible de cada producto"
         columns:
           - name: inventory_id
@@ -236,6 +304,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: inventory
             data_type: number
             description: "Cantidad del producto en el almacén"
@@ -246,6 +318,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__promos
+        config:
+          contract:
+            enforced: true
         description: "Tabla de las promociones disponibles"
         columns:
           - name: promo_id
@@ -254,6 +329,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: name
             data_type: varchar
             description: "Nombre de la promoción"
@@ -270,6 +349,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__users
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los usuarios registrados"
         columns:
           - name: user_id
@@ -278,6 +360,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: updated_at
             data_type: timestamp_tz
             description: "Fecha en la que se realizó la última modificación"
@@ -288,6 +374,10 @@ sources:
               - relationships:
                   to: ref('stg_sql_server_dbo__addresses')
                   field: address_id
+            constraints:
+              - type: foreign_key
+              - type: not_null
+              - type: unique
           - name: last_name
             data_type: varchar
             description: "Apellido del usuario"
@@ -305,6 +395,9 @@ sources:
             description: ""
 
       - name: stg_sql_server_dbo__order_status
+        config:
+          contract:
+            enforced: true
         description: "Tabla de los estados de un pedido"
         columns:
           - name: status_id
@@ -313,6 +406,10 @@ sources:
             tests:
               - unique
               - not_null
+            constraints:
+              - type: primary_key
+              - type: not_null
+              - type: unique
           - name: status
             data_type: varchar
             description: "Estados de un pedido (realizado, enviado, completado o devuelto)"
