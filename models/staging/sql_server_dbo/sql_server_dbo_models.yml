@@ -216,11 +216,33 @@ sources:
           - name: name
             data_type: varchar
             description: "Nombre del producto"
-          - name: inventory
+          - name: inventory_id
             data_type: number
             description: ""
+            tests:
+              - relationships:
+                  to: ref('stg_sql_server_dbo__product_stock')
+                  field: inventory_id
           - name: date_deleted
             data_type: boolean
+            description: ""
+
+      - name: stg_sql_server_dbo__product_stock
+        description: "Tabla del stock disponible de cada producto"
+        columns:
+          - name: inventory_id
+            data_type: varchar
+            description: "Id único de la tabla"
+            tests:
+              - unique
+              - not_null
+          - name: inventory
+            data_type: number
+            description: "Cantidad del producto en el almacén"
+            tests:
+              - positive_values
+          - name: _fivetran_synced
+            data_type: timestamp_tz
             description: ""
 
       - name: stg_sql_server_dbo__promos
@@ -246,9 +268,6 @@ sources:
           - name: date_deleted
             data_type: boolean
             description: ""
-          - name: _fivetran_synced
-            data_type: timestamp_tz
-            description: ""
 
       - name: stg_sql_server_dbo__users
         description: "Tabla de los usuarios registrados"
@@ -259,6 +278,9 @@ sources:
             tests:
               - unique
               - not_null
+          - name: updated_at
+            data_type: timestamp_tz
+            description: "Fecha en la que se realizó la última modificación"
           - name: address_id
             data_type: varchar
             description: "Id de la dirección del usuario"
@@ -269,9 +291,6 @@ sources:
           - name: last_name
             data_type: varchar
             description: "Apellido del usuario"
-          - name: created_at
-            data_type: timestamp_tz
-            description: "Fecha de creación del usuario"
           - name: phone_number
             data_type: varchar
             description: "Número de teléfono del usuario"
