@@ -1,0 +1,199 @@
+version: 2
+
+sources:
+
+  - name: core_models # name of the source 
+    description: ""
+    schema: dbt_rrodriguez # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 1000, period: day}
+
+    tables:
+
+      - name: dim_addresses
+        description: "Tabla de la dirección de cada usuario y pedido"
+        columns:
+          - name: address_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: zipcode
+            data_type: number
+            description: "Código postal de cada dirección"
+          - name: country
+            data_type: varchar
+            description: "País de cada dirección"
+          - name: address
+            data_type: varchar
+            description: "Dirección"
+          - name: state
+            data_type: varchar
+            description: "Estado de cada dirección"
+
+      - name: fct_events
+        description: ""
+        columns:
+          - name: event_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: page_url
+            data_type: varchar
+            description: ""
+          - name: event_type_id
+            data_type: varchar
+            description: ""
+          - name: user_id
+            data_type: varchar
+            description: ""
+          - name: product_id
+            data_type: varchar
+            description: ""
+          - name: session_id
+            data_type: varchar
+            description: ""
+          - name: created_at
+            data_type: timestamp_ntz
+            description: ""
+
+      - name: dim_event_type
+        description: "Tabla de los tipos de eventos"
+        columns:
+          - name: event_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: event_type
+            data_type: varchar
+            description: "Tipo de evento"
+
+      - name: fct_orders
+        description: "Tabla de los pedidos realizados"
+        columns:
+          - name: order_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: shipping_service
+            data_type: varchar
+            description: "Servicios de envío"
+          - name: product_shipping_cost
+            data_type: float
+            description: "Coste del envío"
+          - name: address_id
+            data_type: varchar
+            description: "Id de la dirección del usuario"
+          - name: created_at
+            data_type: timestamp_tz
+            description: "Fecha de creación del pedido"
+          - name: promo_id
+            data_type: varchar
+            description: "Id de la promo a realizar"
+          - name: estimated_delivery_at
+            data_type: timestamp_tz
+            description: "Fecha de estimación de entrega del pedido"
+          - name: product_cost
+            data_type: float
+            description: "Coste del pedido"
+          - name: user_id
+            data_type: varchar
+            description: "Id del usuario que ha realizado el pedido"
+          - name: delivered_at
+            data_type: timestamp_tz
+            description: "Fecha de entrega del pedido"
+          - name: tracking_id
+            data_type: varchar
+            description: "Id del seguimiento del pedido"
+          - name: status_id
+            data_type: varchar
+            description: "Id del estado del pedido (realizado, enviado, completado o devuelto)"
+          - name: product_id
+            data_type: varchar
+            description: "Id del producto que se ha pedido"
+          - name: quantity
+            data_type: number
+            description: "Cantidad que se ha pedido de ese producto"
+
+      - name: dim_products
+        description: "Tabla de los productos que se pueden comprar"
+        columns:
+          - name: product_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: price
+            data_type: float
+            description: "Precio de cada producto"
+          - name: name
+            data_type: varchar
+            description: "Nombre del producto"
+          - name: inventory_id
+            data_type: number
+            description: ""
+
+      - name: dim_product_stock
+        description: "Tabla del stock disponible de cada producto"
+        columns:
+          - name: inventory_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: inventory
+            data_type: number
+            description: "Cantidad del producto en el almacén"
+          - name: dbt_updated_at
+            data_type: timestamp_tz
+            description: ""
+
+      - name: dim_promos
+        description: "Tabla de las promociones disponibles"
+        columns:
+          - name: promo_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: name
+            data_type: varchar
+            description: "Nombre de la promoción"
+          - name: discount
+            data_type: number
+            description: "Descuenta a aplicar al pedido"
+          - name: status
+            data_type: varchar
+            description: "Estado de la promoción (si está activa o no)"
+
+      - name: dim_users
+        description: "Tabla de los usuarios registrados"
+        columns:
+          - name: user_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: updated_at
+            data_type: timestamp_tz
+            description: "Fecha en la que se realizó la última modificación"
+          - name: address_id
+            data_type: varchar
+            description: "Id de la dirección del usuario"
+          - name: last_name
+            data_type: varchar
+            description: "Apellido del usuario"
+          - name: phone_number
+            data_type: varchar
+            description: "Número de teléfono del usuario"
+          - name: first_name
+            data_type: varchar
+            description: "Nombre del usuario"
+          - name: email
+            data_type: varchar
+            description: "Email del usuario"
+
+      - name: dim_order_status
+        description: "Tabla de los estados de un pedido"
+        columns:
+          - name: status_id
+            data_type: varchar
+            description: "Id único de la tabla"
+          - name: status
+            data_type: varchar
+            description: "Estados de un pedido (realizado, enviado, completado o devuelto)"
