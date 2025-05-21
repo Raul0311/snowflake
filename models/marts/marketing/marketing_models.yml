@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+
+  - name: marketing_models # name of the source 
+    description: ""
+    schema: dbt_rrodriguez # this is the schema our raw data lives in
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB" # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 1000, period: day}
+
+    tables:
+
+      - name: ranking_users
+        description: >
+          Tabla agregada con información de usuarios junto con el total gastado en pedidos,
+          incluyendo un ranking ordenado de mayor a menor gasto.
+        columns:
+          - name: user_id
+            description: Identificador del usuario.
+            tests:
+              - not_null
+          - name: first_name
+            description: Nombre del usuario.
+          - name: last_name
+            description: Apellido del usuario.
+          - name: email
+            description: Correo electrónico del usuario.
+          - name: total_spent
+            description: Total gastado por el usuario en pedidos.
+            tests:
+              - not_null
+              - positive_values
+          - name: ranking
+            description: Posición del usuario en el ranking de gasto total.
+            tests:
+              - not_null
+
+      - name: status_orders_state
+        description: >
+          Tabla agregada con el número de pedidos agrupados por estado de entrega y estado del pedido.
+        columns:
+          - name: state
+            description: Estado donde se entregó el pedido.
+            tests:
+              - not_null
+          - name: order_status
+            description: Estado del pedido (delivered, preparing, shipped).
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['delivered', 'preparing', 'shipped']
+          - name: total_orders
+            description: Número de pedidos en ese estado con ese status.
+            tests:
+              - not_null
+              - positive_values

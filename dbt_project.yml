@@ -37,11 +37,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   snowflake:
     staging:
-      +materialized: table
+      +materialized: view
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
-      sql_server_dbo:
-        base:
-          +materialized: view
     marts:
       +materialized: table
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB"
