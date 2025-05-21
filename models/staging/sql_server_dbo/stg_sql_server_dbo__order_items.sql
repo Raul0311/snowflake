@@ -5,7 +5,8 @@ WITH src_order_items AS (
 
 renamed_casted AS (
     SELECT
-          md5(order_id) AS order_id
+          CAST(md5(CONCAT(order_id, '|', product_id)) AS VARCHAR(80)) AS order_items_id
+        , md5(order_id) AS order_id
         , md5(product_id) AS product_id
         , CAST(quantity AS INT) AS quantity
         , _fivetran_deleted AS date_deleted

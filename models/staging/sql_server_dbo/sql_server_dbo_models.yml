@@ -1,415 +1,408 @@
 version: 2
 
-sources:
+models:
+  - name: stg_sql_server_dbo__addresses
+    config:
+      contract:
+        enforced: true
+    description: Tabla de la dirección de cada usuario y pedido
+    columns:
+      - name: address_id
+        data_type: varchar
+        description: Id único de la dirección
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: zipcode
+        data_type: number
+        description: Código postal de cada dirección
+        tests:
+          - positive_values
+      - name: country
+        data_type: varchar
+        description: País en el que se encuentra cada dirección
+      - name: address
+        data_type: varchar
+        description: Dirección
+      - name: state
+        data_type: varchar
+        description: Estado o región en la que se encuentra cada dirección
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila se ha eliminado o no
 
-  - name: sql_server_dbo_models # name of the source 
-    description: ""
-    schema: dbt_rrodriguez # this is the schema our raw data lives in
-    database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB" # this is the name of our database
+  - name: stg_sql_server_dbo__events
+    config:
+      contract:
+        enforced: true
+    description: Tabla de eventos registrados de cada usuario en la página web
+    columns:
+      - name: event_id
+        data_type: varchar
+        description: Id único del evento
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: page_url
+        data_type: varchar
+        description: URL de la página donde ocurrió el evento
+      - name: event_type_id
+        data_type: varchar
+        description: Id que hace referencia al tipo de evento
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__event_type')
+              field: event_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: user_id
+        data_type: varchar
+        description: Id del usuario que realizó el evento
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__users')
+              field: user_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: product_id
+        data_type: varchar
+        description: Id del producto relacionado con el evento
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__products')
+              field: product_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: session_id
+        data_type: varchar
+        description: Id de la sesión del usuario en la que ocurrió el evento
+      - name: created_at
+        data_type: timestamp_tz
+        description: Fecha y hora en la que se registró el evento
+      - name: order_id
+        data_type: varchar
+        description: Id del pedido al que pertenece el evento
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila se ha eliminado o no
 
-    quoting:
-      database: false
-      schema: false
-      identifier: false
+  - name: stg_sql_server_dbo__event_type
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los tipos de eventos
+    columns:
+      - name: event_type_id
+        data_type: varchar
+        description: Id único del tipo de evento
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: event_type
+        data_type: varchar
+        description: Tipo de evento
 
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 1000, period: day}
+  - name: stg_sql_server_dbo__order_items
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los detalles del pedido
+    columns:
+      - name: order_items_id
+        data_type: varchar
+        description: Id único de los detalles del pedido
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: order_id
+        data_type: varchar
+        description: Id único de los detalles del pedido
+        tests:
+          - not_null
+      - name: product_id
+        data_type: varchar
+        description: Id del producto incluido en el pedido
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__products')
+              field: product_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: quantity
+        data_type: number
+        description: Cantidad que se ha pedido de ese producto
+        tests:
+          - positive_values
+      - name: date_deleted
+        data_type: boolean
+        description: Si se ha eliminado la fila o no
 
-    tables:
+  - name: stg_sql_server_dbo__orders
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los pedidos realizados
+    columns:
+      - name: order_id
+        data_type: varchar
+        description: Id único del pedido
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: shipping_service
+        data_type: varchar
+        description: Servicio utilizado para el envío del pedido
+      - name: shipping_cost
+        data_type: float
+        description: Coste del envío
+        tests:
+          - positive_values
+      - name: address_id
+        data_type: varchar
+        description: Id de la dirección donde se envía el pedido
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__addresses')
+              field: address_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: created_at
+        data_type: timestamp_tz
+        description: Fecha y hora de creación del pedido
+      - name: promo_id
+        data_type: varchar
+        description: Id de la promoción aplicada al pedido
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__promos')
+              field: promo_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: estimated_delivery_at
+        data_type: timestamp_tz
+        description: Fecha estimada de entrega del pedido
+      - name: order_cost
+        data_type: float
+        description: Coste del pedido sin los gastos de envío
+        tests:
+          - positive_values
+      - name: user_id
+        data_type: varchar
+        description: Id del usuario que ha realizado el pedido
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__users')
+              field: user_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: order_total
+        data_type: float
+        description: Coste total del pedido
+        tests:
+          - positive_values
+      - name: delivered_at
+        data_type: timestamp_tz
+        description: Fecha en la que se entregó el pedido
+      - name: tracking_id
+        data_type: varchar
+        description: Id para rastrear el estado del envío
+      - name: status_id
+        data_type: varchar
+        description: Id del estado del pedido
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__order_status')
+              field: status_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila se ha eliminado o no
 
-      - name: stg_sql_server_dbo__addresses
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de la dirección de cada usuario y pedido"
-        columns:
-          - name: address_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: zipcode
-            data_type: number
-            description: "Código postal de cada dirección"
-            tests:
-              - positive_values
-          - name: country
-            data_type: varchar
-            description: "País de cada dirección"
-          - name: address
-            data_type: varchar
-            description: "Dirección"
-          - name: state
-            data_type: varchar
-            description: "Estado de cada dirección"
-          - name: date_deleted
-            data_type: boolean
-            description: ""
+  - name: stg_sql_server_dbo__products
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los productos que se pueden comprar
+    columns:
+      - name: product_id
+        data_type: varchar
+        description: Id único del producto
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: price
+        data_type: float
+        description: Precio de cada producto
+        tests:
+          - positive_values
+      - name: name
+        data_type: varchar
+        description: Nombre del producto
+      - name: inventory_id
+        data_type: varchar
+        description: Id del stock que hay del producto
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__product_stock')
+              field: inventory_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila está eliminada o no
 
-      - name: stg_sql_server_dbo__events
-        config:
-          contract:
-            enforced: true
-        description: ""
-        columns:
-          - name: event_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: page_url
-            data_type: varchar
-            description: ""
-          - name: event_type_id
-            data_type: varchar
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__event_type')
-                  field: event_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-            description: ""
-          - name: user_id
-            data_type: varchar
-            description: ""
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__users')
-                  field: user_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: product_id
-            data_type: varchar
-            description: ""
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__products')
-                  field: product_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: session_id
-            data_type: varchar
-            description: ""
-          - name: created_at
-            data_type: timestamp_ntz
-            description: ""
-          - name: order_id
-            data_type: varchar
-            description: ""
-          - name: date_deleted
-            data_type: boolean
-            description: ""
+  - name: stg_sql_server_dbo__product_stock
+    config:
+      contract:
+        enforced: true
+    description: Tabla del stock disponible de cada producto
+    columns:
+      - name: inventory_id
+        data_type: varchar
+        description: Id único del inventario del producto
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: inventory
+        data_type: number
+        description: Cantidad de unidades disponibles en stock
+        tests:
+          - positive_values
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+        description: Fecha en la que se creó el producto
 
-      - name: stg_sql_server_dbo__event_type
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los tipos de eventos"
-        columns:
-          - name: event_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: event_type
-            data_type: varchar
-            description: "Tipo de evento"
+  - name: stg_sql_server_dbo__promos
+    config:
+      contract:
+        enforced: true
+    description: Tabla de las promociones
+    columns:
+      - name: promo_id
+        data_type: varchar
+        description: Id único de la promoción
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: name
+        data_type: varchar
+        description: Nombre de la promoción
+      - name: discount
+        data_type: float
+        description: Descuento a aplicar al pedido
+        tests:
+          - positive_values
+      - name: status
+        data_type: varchar
+        description: "Estado de la promoción (activa o inactiva)"
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila se ha eliminado o no
 
-      - name: stg_sql_server_dbo__order_items
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los detalles del pedido"
-        columns:
-          - name: order_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - not_null
-          - name: product_id
-            data_type: varchar
-            description: "Id del producto que se ha pedido"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__products')
-                  field: product_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: quantity
-            data_type: number
-            description: "Cantidad que se ha pedido de ese producto"
-            tests:
-              - positive_values
-          - name: date_deleted
-            data_type: boolean
-            description: ""
+  - name: stg_sql_server_dbo__users
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los usuarios registrados
+    columns:
+      - name: user_id
+        data_type: varchar
+        description: Id único del usuario
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: updated_at
+        data_type: timestamp_tz
+        description: Fecha y hora de la última actualización de los datos del usuario
+      - name: address_id
+        data_type: varchar
+        description:  Id de la dirección asociada al usuario
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo__addresses')
+              field: address_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
+          - type: unique
+      - name: last_name
+        data_type: varchar
+        description: Apellido del usuario
+      - name: phone_number
+        data_type: number
+        description: Número de teléfono del usuario
+      - name: first_name
+        data_type: varchar
+        description: Nombre del usuario
+      - name: email
+        data_type: varchar
+        description: Correo electrónico del usuario
+      - name: date_deleted
+        data_type: boolean
+        description: Si la fila se ha eliminado o no
 
-      - name: stg_sql_server_dbo__orders
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los pedidos realizados"
-        columns:
-          - name: order_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: shipping_service
-            data_type: varchar
-            description: "Servicios de envío"
-          - name: shipping_cost
-            data_type: float
-            description: "Coste del envío"
-            tests:
-              - positive_values
-          - name: address_id
-            data_type: varchar
-            description: "Id de la dirección del usuario"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__addresses')
-                  field: address_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: created_at
-            data_type: timestamp_tz
-            description: "Fecha de creación del pedido"
-          - name: promo_id
-            data_type: varchar
-            description: "Id de la promo a realizar"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__promos')
-                  field: promo_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: estimated_delivery_at
-            data_type: timestamp_tz
-            description: "Fecha de estimación de entrega del pedido"
-          - name: order_cost
-            data_type: float
-            description: "Coste del pedido"
-            tests:
-              - positive_values
-          - name: user_id
-            data_type: varchar
-            description: "Id del usuario que ha realizado el pedido"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__users')
-                  field: user_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: order_total
-            data_type: float
-            description: "Coste total del pedido"
-            tests:
-              - positive_values
-          - name: delivered_at
-            data_type: timestamp_tz
-            description: "Fecha de entrega del pedido"
-          - name: tracking_id
-            data_type: varchar
-            description: "Id del seguimiento del pedido"
-          - name: status_id
-            data_type: varchar
-            description: "Id del estado del pedido (realizado, enviado, completado o devuelto)"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__order_status')
-                  field: status_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: date_deleted
-            data_type: boolean
-            description: ""
-
-      - name: stg_sql_server_dbo__products
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los productos que se pueden comprar"
-        columns:
-          - name: product_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: price
-            data_type: float
-            description: "Precio de cada producto"
-            tests:
-              - positive_values
-          - name: name
-            data_type: varchar
-            description: "Nombre del producto"
-          - name: inventory_id
-            data_type: number
-            description: ""
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__product_stock')
-                  field: inventory_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-          - name: date_deleted
-            data_type: boolean
-            description: ""
-
-      - name: stg_sql_server_dbo__product_stock
-        config:
-          contract:
-            enforced: true
-        description: "Tabla del stock disponible de cada producto"
-        columns:
-          - name: inventory_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: inventory
-            data_type: number
-            description: "Cantidad del producto en el almacén"
-            tests:
-              - positive_values
-          - name: _fivetran_synced
-            data_type: timestamp_tz
-            description: ""
-
-      - name: stg_sql_server_dbo__promos
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de las promociones disponibles"
-        columns:
-          - name: promo_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: name
-            data_type: varchar
-            description: "Nombre de la promoción"
-          - name: discount
-            data_type: number
-            description: "Descuenta a aplicar al pedido"
-            tests:
-              - positive_values
-          - name: status
-            data_type: varchar
-            description: "Estado de la promoción (si está activa o no)"
-          - name: date_deleted
-            data_type: boolean
-            description: ""
-
-      - name: stg_sql_server_dbo__users
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los usuarios registrados"
-        columns:
-          - name: user_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: updated_at
-            data_type: timestamp_tz
-            description: "Fecha en la que se realizó la última modificación"
-          - name: address_id
-            data_type: varchar
-            description: "Id de la dirección del usuario"
-            tests:
-              - relationships:
-                  to: ref('stg_sql_server_dbo__addresses')
-                  field: address_id
-            constraints:
-              - type: foreign_key
-              - type: not_null
-              - type: unique
-          - name: last_name
-            data_type: varchar
-            description: "Apellido del usuario"
-          - name: phone_number
-            data_type: varchar
-            description: "Número de teléfono del usuario"
-          - name: first_name
-            data_type: varchar
-            description: "Nombre del usuario"
-          - name: email
-            data_type: varchar
-            description: "Email del usuario"
-          - name: date_deleted
-            data_type: boolean
-            description: ""
-
-      - name: stg_sql_server_dbo__order_status
-        config:
-          contract:
-            enforced: true
-        description: "Tabla de los estados de un pedido"
-        columns:
-          - name: status_id
-            data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
-            constraints:
-              - type: primary_key
-              - type: not_null
-              - type: unique
-          - name: status
-            data_type: varchar
-            description: "Estados de un pedido (realizado, enviado, completado o devuelto)"
+  - name: stg_sql_server_dbo__order_status
+    config:
+      contract:
+        enforced: true
+    description: Tabla de los estados de un pedido
+    columns:
+      - name: status_id
+        data_type: varchar
+        description: Id único del status
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: status
+        data_type: varchar
+        description: Estados de un pedido (delivered, preparing, shipped)

@@ -18,29 +18,25 @@ sources:
     tables:
 
       - name: budget
-        description: ""
+        description: Presupuesto mensual estimado por producto
         columns:
           - name: _row
             data_type: number
-            description: ""
+            description: Número de fila original
             tests:
               - unique
               - not_null
           - name: quantity
             data_type: number
-            description: ""
+            description: Cantidad presupuestada del producto para el mes correspondiente
             tests:
               - positive_values
           - name: month
             data_type: date
-            description: ""
+            description: Mes y año al que corresponde el presupuesto
           - name: product_id
             data_type: varchar
-            description: ""
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','products')
-                  field: product_id
+            description: Id del producto presupuestado
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se introdució el registro

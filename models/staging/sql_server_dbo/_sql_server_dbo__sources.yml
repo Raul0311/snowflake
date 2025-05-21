@@ -3,7 +3,6 @@ version: 2
 sources:
 
   - name: sql_server_dbo # name of the source 
-    description: ""
     schema: sql_server_dbo # this is the schema our raw data lives in
     database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB" # this is the name of our database
 
@@ -19,262 +18,206 @@ sources:
     tables:
 
       - name: addresses
-        description: "Tabla de la dirección de cada usuario y pedido"
+        description: Tabla de la dirección de cada usuario y pedido
         columns:
           - name: address_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único de la dirección
           - name: zipcode
             data_type: number
-            description: "Código postal de cada dirección"
-            tests:
-              - positive_values
+            description: Código postal de cada dirección
           - name: country
             data_type: varchar
-            description: "País de cada dirección"
+            description: País en el que se encuentra cada dirección
           - name: address
             data_type: varchar
-            description: "Dirección"
+            description: Dirección
           - name: state
             data_type: varchar
-            description: "Estado de cada dirección"
+            description: Estado o región en la que se encuentra cada dirección
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: events
-        description: ""
+        description: Tabla de eventos registrados de cada usuario en la página web
         columns:
           - name: event_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único del evento
           - name: page_url
             data_type: varchar
-            description: ""
+            description: URL de la página donde ocurrió el evento
           - name: event_type
             data_type: varchar
-            description: ""
+            description: Tipo de evento
           - name: user_id
             data_type: varchar
-            description: ""
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','users')
-                  field: user_id
+            description: Id del usuario que realizó el evento
           - name: product_id
             data_type: varchar
-            description: ""
+            description: Id del producto relacionado con el evento
           - name: session_id
             data_type: varchar
-            description: ""
+            description: Id de la sesión del usuario en la que ocurrió el evento
           - name: created_at
             data_type: timestamp_ntz
-            description: ""
+            description: Fecha y hora en la que se registró el evento
           - name: order_id
             data_type: varchar
-            description: ""
+            description: Id del pedido al que pertenece el evento
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: order_items
-        description: "Tabla de los detalles del pedido"
+        description: Tabla de los detalles del pedido
         columns:
           - name: order_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - not_null
+            description: Id único de los detalles del pedido
           - name: product_id
             data_type: varchar
-            description: "Id del producto que se ha pedido"
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','products')
-                  field: product_id
+            description: Id del producto incluido en el pedido
           - name: quantity
             data_type: number
-            description: "Cantidad que se ha pedido de ese producto"
-            tests:
-              - positive_values
+            description: Cantidad que se ha pedido de ese producto
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: orders
-        description: "Tabla de los pedidos realizados"
+        description: Tabla de los pedidos realizados
         columns:
           - name: order_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único del pedido
           - name: shipping_service
             data_type: varchar
-            description: "Servicios de envío"
+            description: Servicio utilizado para el envío del pedido
           - name: shipping_cost
             data_type: float
-            description: "Coste del envío"
-            tests:
-              - positive_values
+            description: Coste del envío
           - name: address_id
             data_type: varchar
-            description: "Id de la dirección del usuario"
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','addresses')
-                  field: address_id
+            description: Id de la dirección donde se envía el pedido
           - name: created_at
             data_type: timestamp_tz
-            description: "Fecha de creación del pedido"
+            description: Fecha y hora de creación del pedido
           - name: promo_id
             data_type: varchar
-            description: "Id de la promo a realizar"
+            description: Id de la promoción aplicada al pedido
           - name: estimated_delivery_at
             data_type: timestamp_tz
-            description: "Fecha de estimación de entrega del pedido"
+            description: Fecha estimada de entrega del pedido
           - name: order_cost
             data_type: float
-            description: "Coste del pedido"
-            tests:
-              - positive_values
+            description: Coste del pedido sin los gastos de envío
           - name: user_id
             data_type: varchar
-            description: "Id del usuario que ha realizado el pedido"
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','users')
-                  field: user_id
+            description: Id del usuario que ha realizado el pedido
           - name: order_total
             data_type: float
-            description: "Coste total del pedido"
-            tests:
-              - positive_values
+            description: Coste total del pedido
           - name: delivered_at
             data_type: timestamp_tz
-            description: "Fecha de entrega del pedido"
+            description: Fecha en la que se entregó el pedido
           - name: tracking_id
             data_type: varchar
-            description: "Id del seguimiento del pedido"
+            description: Id para rastrear el estado del envío
           - name: status
             data_type: varchar
-            description: "Estado del pedido (realizado, enviado, completado o devuelto)"
+            description: Estados de un pedido (delivered, preparing, shipped)
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no 
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: products
-        description: "Tabla de los productos que se pueden comprar"
+        description: Tabla de los productos que se pueden comprar
         columns:
           - name: product_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único del producto
           - name: price
             data_type: float
-            description: "Precio de cada producto"
-            tests:
-              - positive_values
+            description: Precio de cada producto
           - name: name
             data_type: varchar
-            description: "Nombre del producto"
+            description: Nombre del producto
           - name: inventory
             data_type: number
-            description: ""
+            description: Cantidad de unidades disponibles en stock
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: promos
-        description: "Tabla de las promociones disponibles"
+        description: Tabla de las promociones
         columns:
           - name: promo_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único de la promoción
           - name: discount
             data_type: number
-            description: "Descuenta a aplicar al pedido"
-            tests:
-              - positive_values
+            description: Descuento a aplicar al pedido
           - name: status
             data_type: varchar
-            description: "Estado de la promoción (si está activa o no)"
+            description: Estado de la promoción (activa o inactiva)
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro
 
       - name: users
-        description: "Tabla de los usuarios registrados"
+        description: Tabla de los usuarios registrados
         columns:
           - name: user_id
             data_type: varchar
-            description: "Id único de la tabla"
-            tests:
-              - unique
-              - not_null
+            description: Id único del usuario
           - name: updated_at
             data_type: timestamp_tz
-            description: "Última actualización del perfil"
+            description: Fecha y hora de la última actualización de los datos del usuario
           - name: address_id
             data_type: varchar
-            description: "Id de la dirección del usuario"
-            tests:
-              - relationships:
-                  to: source('sql_server_dbo','addresses')
-                  field: address_id
+            description: Id de la dirección asociada al usuario
           - name: last_name
             data_type: varchar
-            description: "Apellido del usuario"
+            description: Apellido del usuario
           - name: created_at
             data_type: timestamp_tz
-            description: "Fecha de creación del usuario"
+            description: Fecha en la que se creó el usuario
           - name: phone_number
             data_type: varchar
-            description: "Número de teléfono del usuario"
+            description: Número de teléfono del usuario
           - name: total_orders
             data_type: number
-            description: "Número total de pedidos que ha realizado"
-            tests:
-              - positive_values
+            description: Número total de pedidos del usuario
           - name: first_name
             data_type: varchar
-            description: "Nombre del usuario"
+            description: Nombre del usuario
           - name: email
             data_type: varchar
-            description: "Email del usuario"
+            description: Correo electrónico del usuario
           - name: _fivetran_deleted
             data_type: boolean
-            description: ""
+            description: Si la fila se ha eliminado o no
           - name: _fivetran_synced
             data_type: timestamp_tz
-            description: ""
+            description: Fecha en la que se creó el registro

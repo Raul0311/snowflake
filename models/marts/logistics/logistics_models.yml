@@ -1,54 +1,37 @@
 version: 2
 
-sources:
+models:
+  - name: orders_per_hours
+    description: >
+      Tabla agregada con el total de pedidos agrupados por franja horaria del día.
+      La franja se calcula en función de la hora en que se creó el pedido.
+    columns:
+      - name: time_range
+        description: Franja horaria de creación del pedido (Madrugada, Mañana, Tarde, Noche).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Madrugada', 'Mañana', 'Tarde', 'Noche']
+      - name: total_orders
+        description: Número total de pedidos realizados en esa franja horaria.
+        tests:
+          - not_null
+          - positive_values
 
-  - name: logistics_models # name of the source 
-    description: ""
-    schema: dbt_rrodriguez # this is the schema our raw data lives in
-    database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB" # this is the name of our database
-
-    quoting:
-      database: false
-      schema: false
-      identifier: false
-
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 1000, period: day}
-
-    tables:
-
-      - name: orders_per_hours
-        description: >
-          Tabla agregada con el total de pedidos agrupados por franja horaria del día.
-          La franja se calcula en función de la hora en que se creó el pedido.
-        columns:
-          - name: time_range
-            description: Franja horaria de creación del pedido (Madrugada, Mañana, Tarde, Noche).
-            tests:
-              - not_null
-              - accepted_values:
-                  values: ['Madrugada', 'Mañana', 'Tarde', 'Noche']
-          - name: total_orders
-            description: Número total de pedidos realizados en esa franja horaria.
-            tests:
-              - not_null
-              - positive_values
-
-      - name: orders_per_state
-        description: >
-          Tabla agregada con la relación entre cada pedido y el estado al que fue enviado
-        columns:
-          - name: order_state_id
-            description: ID único de la tabla
-            tests:
-              - not_null
-              - unique
-          - name: order_id
-            description: Identificador del pedido.
-            tests:
-              - not_null
-          - name: state
-            description: Estado asociado al pedido.
-            tests:
-              - not_null
+  - name: orders_per_state
+    description: >
+      Tabla agregada con la relación entre cada pedido y el estado al que fue enviado
+    columns:
+      - name: order_state_id
+        description: ID único de la tabla
+        tests:
+          - not_null
+          - unique
+      - name: order_id
+        description: Identificador del pedido.
+        tests:
+          - not_null
+      - name: state
+        description: Estado asociado al pedido.
+        tests:
+          - not_null

@@ -5,7 +5,7 @@ WITH src_event_type AS (
 
 renamed_casted AS (
     SELECT
-          DISTINCT md5(event_type) as event_id
+          DISTINCT md5(event_type) as event_type_id
         , event_type
     FROM src_event_type
     )
