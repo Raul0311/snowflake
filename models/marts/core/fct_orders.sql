@@ -17,8 +17,8 @@ stg_products AS (
 -- Total de unidades en cada pedido
 total_units_per_order AS (
     SELECT 
-        order_id,
-        SUM(quantity) AS total_units
+          order_id
+        , SUM(quantity) AS total_units
     FROM stg_order_items
     GROUP BY order_id
 ),
