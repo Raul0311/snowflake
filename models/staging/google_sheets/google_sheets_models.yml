@@ -1,49 +1,40 @@
 version: 2
 
-sources:
-
-  - name: google_sheets_models # name of the source 
-    schema: dbt_rrodriguez # this is the schema our raw data lives in
-    database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB" # this is the name of our database
-
-    quoting:
-      database: false
-      schema: false
-      identifier: false
-
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 1000, period: day}
-
-    tables:
-
-      - name: stg_google_sheets__budget
-        description: ""
-        columns:
-          - name: budget_id
-            data_type: number
-            description: ""
-            tests:
-              - unique
-              - not_null
-          - name: _row
-            data_type: number
-            description: ""
-          - name: quantity
-            data_type: number
-            description: ""
-            tests:
-              - positive_values
-          - name: month
-            data_type: date
-            description: ""
-          - name: product_id
-            data_type: varchar
-            description: ""
-            tests:
-              - relationships:
-                  to: ref('sql_server_dbo','products')
-                  field: product_id
-          - name: _fivetran_synced
-            data_type: timestamp_tz
-            description: ""
+models:
+  - name: stg_google_sheets__budget
+    config:
+      contract:
+        enforced: true
+    description: Presupuesto mensual estimado por producto
+    columns:
+      - name: budget_id
+        data_type: varchar
+        description: Id único del presupuesto
+        tests:
+          - unique
+          - not_null
+        constraints:
+          - type: primary_key
+          - type: not_null
+          - type: unique
+      - name: _row
+        data_type: float
+        description: Número de fila original
+      - name: quantity
+        data_type: float
+        description: Cantidad presupuestada del producto para el mes correspondiente
+        tests:
+          - positive_values
+      - name: month
+        data_type: date
+        description: Mes y año al que corresponde el presupuesto
+      - name: product_id
+        data_type: varchar
+        description: Id del producto presupuestado
+        tests:
+          - relationships:
+              to: ref('sql_server_dbo','products')
+              field: product_id
+        constraints:
+          - type: foreign_key
+          - type: not_null

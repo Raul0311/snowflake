@@ -1,5 +1,4 @@
 WITH fct_orders AS (
-
     SELECT
           order_id
         , created_at
@@ -10,17 +9,14 @@ WITH fct_orders AS (
               WHEN EXTRACT(HOUR FROM created_at) BETWEEN 18 AND 23 THEN 'Noche'
           END AS time_range
     FROM {{ ref('fct_orders') }}
-
-),
+    ),
 
 orders_grouped AS (
-
     SELECT
           time_range
         , COUNT(order_id) AS total_orders
     FROM fct_orders
     GROUP BY time_range
-
-)
+    )
 
 SELECT * FROM orders_grouped

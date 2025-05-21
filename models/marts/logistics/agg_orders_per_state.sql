@@ -14,9 +14,11 @@ orders_per_state AS (
           md5(CONCAT(o.order_id, '|', a.state)) AS order_state_id
         , o.order_id
         , a.state
+        , COUNT(o.order_id) AS total_orders
     FROM fct_orders o
     JOIN dim_addresses a
     ON o.address_id = a.address_id
+    GROUP BY a.state, o.order_id
     )
 
 SELECT * FROM orders_per_state
