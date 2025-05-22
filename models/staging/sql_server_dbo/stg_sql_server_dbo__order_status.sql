@@ -1,6 +1,6 @@
 WITH src_order_status AS (
     SELECT status
-    FROM {{ ref('orders_timestamp_snp') }}
+    FROM {{ ref('base_sql_server_dbo__orders') }}
     ),
 
 renamed_casted AS (

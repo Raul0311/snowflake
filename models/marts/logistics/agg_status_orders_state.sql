@@ -1,8 +1,10 @@
 WITH orders_with_address AS (
     SELECT
+          DISTINCT
           o.order_id
         , o.status_id
         , a.state
+        , o.estimated_delivery_at
     FROM {{ ref('fct_orders') }} o
     JOIN {{ ref('dim_addresses') }} a
     ON o.address_id = a.address_id
@@ -10,8 +12,10 @@ WITH orders_with_address AS (
 
 orders_with_status AS (
     SELECT
-          owa.state
+          owa.order_id
+        , owa.state
         , s.status
+        , owa.estimated_delivery_at
     FROM orders_with_address owa
     JOIN {{ ref('dim_order_status') }} s
     ON owa.status_id = s.status_id
@@ -19,12 +23,11 @@ orders_with_status AS (
 
 status_orders_state AS ( 
     SELECT
-        state
+          state
         , status AS order_status
-        , COUNT(*) AS total_orders
+        , order_id
+        , estimated_delivery_at
     FROM orders_with_status
-    GROUP BY state, status
-    ORDER BY state, total_orders DESC
     )
 
 SELECT * FROM status_orders_state

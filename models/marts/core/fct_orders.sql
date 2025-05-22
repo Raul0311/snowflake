@@ -1,7 +1,8 @@
 WITH stg_orders AS (
-    SELECT order_id, shipping_service, shipping_cost, address_id, created_at, promo_id, estimated_delivery_at, 
-    order_cost, user_id, delivered_at, tracking_id, status_id
-    FROM {{ ref('stg_sql_server_dbo__orders') }}
+    SELECT order_id, shipping_service, shipping_cost, address_id, created_at, promo_id, 
+    estimated_delivery_at, order_cost, user_id, delivered_at, tracking_id, status_id, 
+    dbt_scd_id, dbt_updated_at, dbt_valid_from, dbt_valid_to
+    FROM {{ ref('orders_timestamp_snp') }}
     ),
 
 stg_order_items AS (
@@ -39,6 +40,10 @@ renamed_casted AS (
         , orders.status_id
         , order_it.product_id
         , order_it.quantity
+        , dbt_scd_id
+        , dbt_updated_at
+        , dbt_valid_from
+        , dbt_valid_to
     FROM stg_orders orders
     JOIN stg_order_items order_it
     ON orders.order_id = order_it.order_id
