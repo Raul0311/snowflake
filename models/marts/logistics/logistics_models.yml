@@ -1,37 +1,69 @@
 version: 2
 
 models:
-  - name: orders_per_hours
+  - name: agg_orders_per_hours
     description: >
       Tabla agregada con el total de pedidos agrupados por franja horaria del día.
       La franja se calcula en función de la hora en que se creó el pedido.
     columns:
       - name: time_range
+        data_type: varchar
         description: Franja horaria de creación del pedido (Madrugada, Mañana, Tarde, Noche).
         tests:
           - not_null
           - accepted_values:
               values: ['Madrugada', 'Mañana', 'Tarde', 'Noche']
       - name: total_orders
+        data_type: number
         description: Número total de pedidos realizados en esa franja horaria.
         tests:
           - not_null
           - positive_values
 
-  - name: orders_per_state
+  - name: agg_orders_per_state
     description: >
       Tabla agregada con la relación entre cada pedido y el estado al que fue enviado
     columns:
       - name: order_state_id
+        data_type: varchar
         description: ID único de la tabla
         tests:
           - not_null
           - unique
-      - name: order_id
-        description: Identificador del pedido.
+      - name: state
+        data_type: varchar
+        description: Estado o región asociada al pedido.
         tests:
           - not_null
+      - name: total_orders
+        data_type: number
+        description: Estado o región asociada al pedido.
+        tests:
+          - not_null
+
+  - name: agg_status_orders_state
+    description: >
+      Tabla agregada con el número de pedidos agrupados por estado de entrega y estado del pedido.
+    columns:
       - name: state
-        description: Estado asociado al pedido.
+        data_type: varchar
+        description: Estado o región donde se entregó el pedido.
+        tests:
+          - not_null
+      - name: order_status
+        data_type: varchar
+        description: Estado del pedido (delivered, preparing, shipped).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'preparing', 'shipped']
+      - name: order_id
+        data_type: varchar
+        description: Id del pedido
+        tests:
+          - not_null
+      - name: estimated_delivery_at
+        data_type: timestamp_tz
+        description: Fecha en la que se debería entregar el pedido
         tests:
           - not_null

@@ -10,6 +10,6 @@
     )
 }}
 
-select * from {{ ref('base_sql_server_dbo__orders') }}
+select * from {{ ref('stg_sql_server_dbo__orders') }}
 
 {% endsnapshot %}

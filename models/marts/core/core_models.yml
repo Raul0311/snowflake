@@ -100,6 +100,18 @@ models:
       - name: quantity
         data_type: number
         description: Cantidad que se ha pedido de ese producto
+      - name: dbt_scd_id
+        data_type: varchar
+        description: Id único generado del snapshot
+      - name: dbt_updated_at
+        data_type: timestamp
+        description: Fecha generada del snapshot que muestra la última vez que se actualizó
+      - name: dbt_valid_from
+        data_type: timestamp
+        description: Fecha generada del snapshot que dice desde cuándo es válido el registro
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: Fecha generada del snapshot que dice hasta cuándo es válido el registro
 
   - name: dim_products
     description: Tabla de los productos que se pueden comprar
@@ -126,9 +138,18 @@ models:
       - name: inventory
         data_type: number
         description: Cantidad de unidades disponibles en stock
+      - name: dbt_scd_id
+        data_type: varchar
+        description: Id único generado del snapshot
       - name: dbt_updated_at
-        data_type: timestamp_tz
-        description: Fecha de la última actualización del stock
+        data_type: timestamp
+        description: Fecha generada del snapshot que muestra la última vez que se actualizó
+      - name: dbt_valid_from
+        data_type: timestamp
+        description: Fecha generada del snapshot que dice desde cuándo es válido el registro
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: Fecha generada del snapshot que dice hasta cuándo es válido el registro
 
   - name: dim_promos
     description: Tabla de las promociones

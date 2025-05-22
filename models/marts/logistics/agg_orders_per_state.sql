@@ -10,15 +10,13 @@ dim_addresses AS (
 
 orders_per_state AS (
     SELECT
-          DISTINCT
-          md5(CONCAT(o.order_id, '|', a.state)) AS order_state_id
-        , o.order_id
+          md5(a.state) AS order_state_id
         , a.state
         , COUNT(o.order_id) AS total_orders
     FROM fct_orders o
     JOIN dim_addresses a
     ON o.address_id = a.address_id
-    GROUP BY a.state, o.order_id
+    GROUP BY a.state
     )
 
 SELECT * FROM orders_per_state
