@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized='incremental'
+    )
+}}
+
 WITH stg_orders AS (
     SELECT order_id, shipping_service, shipping_cost, address_id, created_at, promo_id, 
     estimated_delivery_at, order_cost, user_id, delivered_at, tracking_id, status_id, 
