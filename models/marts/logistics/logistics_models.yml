@@ -62,8 +62,11 @@ models:
         description: Id del pedido
         tests:
           - not_null
+      - name: created_at
+        data_type: timestamp_tz
+        description: Fecha en la que se creó el pedido
+        tests:
+          - not_null
       - name: estimated_delivery_at
         data_type: timestamp_tz
         description: Fecha en la que se debería entregar el pedido
-        tests:
-          - not_null

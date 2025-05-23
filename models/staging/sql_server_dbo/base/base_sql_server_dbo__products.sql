@@ -27,3 +27,9 @@ renamed_casted AS (
     )
 
 SELECT * FROM renamed_casted
+
+
+
+
+
+

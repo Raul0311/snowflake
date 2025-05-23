@@ -60,7 +60,7 @@ models:
         tests:
           - relationships:
               to: ref('stg_sql_server_dbo__event_type')
-              field: event_id
+              field: event_type_id
         constraints:
           - type: foreign_key
           - type: not_null
