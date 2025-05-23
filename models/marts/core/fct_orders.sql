@@ -10,11 +10,6 @@ stg_order_items AS (
     FROM {{ ref('stg_sql_server_dbo__order_items') }}
     ),
 
-stg_products AS (
-    SELECT product_id, price
-    FROM {{ ref('stg_sql_server_dbo__products') }}
-    ),
-
 -- Total de unidades en cada pedido
 total_units_per_order AS (
     SELECT 
@@ -33,7 +28,7 @@ renamed_casted AS (
         , orders.created_at
         , orders.promo_id
         , orders.estimated_delivery_at
-        , pro.price AS product_cost
+        , orders.order_cost / quantity AS product_cost
         , orders.user_id
         , orders.delivered_at
         , orders.tracking_id
@@ -47,8 +42,6 @@ renamed_casted AS (
     FROM stg_orders orders
     JOIN stg_order_items order_it
     ON orders.order_id = order_it.order_id
-    JOIN stg_products pro
-    ON pro.product_id = order_it.product_id
     JOIN total_units_per_order tl_units
     ON order_it.order_id = tl_units.order_id
     )

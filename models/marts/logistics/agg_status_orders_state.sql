@@ -4,6 +4,7 @@ WITH orders_with_address AS (
           o.order_id
         , o.status_id
         , a.state
+        , o.created_at
         , o.estimated_delivery_at
     FROM {{ ref('fct_orders') }} o
     JOIN {{ ref('dim_addresses') }} a
@@ -15,6 +16,7 @@ orders_with_status AS (
           owa.order_id
         , owa.state
         , s.status
+        , owa.created_at
         , owa.estimated_delivery_at
     FROM orders_with_address owa
     JOIN {{ ref('dim_order_status') }} s
@@ -26,6 +28,7 @@ status_orders_state AS (
           state
         , status AS order_status
         , order_id
+        , created_at
         , estimated_delivery_at
     FROM orders_with_status
     )
