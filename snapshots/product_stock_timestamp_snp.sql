@@ -10,6 +10,6 @@
     )
 }}
 
-select * from {{ ref('stg_sql_server_dbo__product_stock') }}
+select * from {{ ref('dim_product_stock') }}
 
 {% endsnapshot %}
