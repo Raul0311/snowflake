@@ -246,9 +246,6 @@ models:
       - name: date_deleted
         data_type: boolean
         description: Si la fila se ha eliminado o no
-      - name: _fivetran_synced
-        data_type: timestamp_tz
-        description: Fecha en la que se creó el registro
 
   - name: stg_sql_server_dbo__products
     config:

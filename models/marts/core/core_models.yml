@@ -70,24 +70,25 @@ models:
       - name: address_id
         data_type: varchar
         description: Id de la dirección donde se envía el pedido
-      - name: created_at
-        data_type: timestamp_tz
-        description: Fecha y hora de creación del pedido
+      - name: delivered_id
+        data_type: varchar
+        description: Id de la tabla de las fechas en las que se creó el pedido, se entregó y cuando debería haberse entregado
+        tests:
+          - relationships:
+              to: ref('dim_orders_delivered_at')
+              field: delivered_id
+        constraints:
+          - type: foreign_key
+          - type: not_null
       - name: promo_id
         data_type: varchar
         description: Id de la promoción aplicada al pedido
-      - name: estimated_delivery_at
-        data_type: timestamp_tz
-        description: Fecha estimada de entrega del pedido
       - name: product_cost
         data_type: float
         description: Coste total del producto sin contar el envío
       - name: user_id
         data_type: varchar
         description: Id del usuario que ha realizado el pedido
-      - name: delivered_at
-        data_type: timestamp_tz
-        description: Fecha en la que se entregó el pedido
       - name: tracking_id
         data_type: varchar
         description: Id para rastrear el estado del envío
@@ -100,18 +101,6 @@ models:
       - name: quantity
         data_type: number
         description: Cantidad que se ha pedido de ese producto
-      - name: dbt_scd_id
-        data_type: varchar
-        description: Id único generado del snapshot
-      - name: dbt_updated_at
-        data_type: timestamp
-        description: Fecha generada del snapshot que muestra la última vez que se actualizó
-      - name: dbt_valid_from
-        data_type: timestamp
-        description: Fecha generada del snapshot que dice desde cuándo es válido el registro
-      - name: dbt_valid_to
-        data_type: timestamp
-        description: Fecha generada del snapshot que dice hasta cuándo es válido el registro
 
   - name: dim_products
     description: Tabla de los productos que se pueden comprar
@@ -138,18 +127,9 @@ models:
       - name: inventory
         data_type: number
         description: Cantidad de unidades disponibles en stock
-      - name: dbt_scd_id
-        data_type: varchar
-        description: Id único generado del snapshot
-      - name: dbt_updated_at
-        data_type: timestamp
-        description: Fecha generada del snapshot que muestra la última vez que se actualizó
-      - name: dbt_valid_from
-        data_type: timestamp
-        description: Fecha generada del snapshot que dice desde cuándo es válido el registro
-      - name: dbt_valid_to
-        data_type: timestamp
-        description: Fecha generada del snapshot que dice hasta cuándo es válido el registro
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+        description: Fecha en la que se creó el registro
 
   - name: dim_promos
     description: Tabla de las promociones
@@ -255,3 +235,19 @@ models:
       - name: product_id
         data_type: varchar
         description: Id del producto presupuestado
+
+  - name: dim_orders_delivered_at
+    description: Fecha en la que se creó el pedido, en la que se entregó y cuándo debería haberse entregado 
+    columns:
+      - name: delivered_id
+        data_type: varchar
+        description: Id único del presupuesto
+      - name: created_at
+        data_type: timestamp_tz
+        description: Fecha y hora de creación del pedido
+      - name: estimated_delivery_at
+        data_type: timestamp_tz
+        description: Fecha estimada de entrega del pedido
+      - name: delivered_at
+        data_type: timestamp_tz
+        description: Fecha en la que se entregó el pedido
