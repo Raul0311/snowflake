@@ -5,11 +5,11 @@
       target_schema='snapshots',
       unique_key='order_id',
       strategy='timestamp',
-      updated_at='_fivetran_synced',
+      updated_at='created_at',
       hard_deletes='invalidate',
     )
 }}
 
-select * from {{ ref('stg_sql_server_dbo__orders') }}
+select * from {{ ref('dim_orders_delivered_at') }}
 
 {% endsnapshot %}
